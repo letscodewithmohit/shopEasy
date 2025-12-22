@@ -21,6 +21,6 @@ router.delete('/delete-product/:id',authMiddleware,adminMiddleware,deleteProduct
 router.get('/', getAllProducts);
 
 // Route to get a product by ID
-router.get('/single-product/:id', getProductById);
+router.patch('/single-product/:id', getProductById);
 
 export default router;
