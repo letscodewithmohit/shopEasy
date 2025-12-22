@@ -1,16 +1,21 @@
 import { useDispatch } from "react-redux";
 import { addToCart } from "../features/cart/cartSlice";
+import { Link } from "react-router-dom";
 
 const ProductCard = ({ product }) => {
 
     const dispatch = useDispatch();
 
+
+
     const handleAddToCart = () => {
     dispatch(addToCart({productId : product._id, quantity : 1}));
   };
   return (
+
+
     <div className=" overflow-hidden hover:shadow-lg transition bg-white">
-      
+      <Link to={`/products/${product._id}`}>
       <div className="h-48 w-full  flex items-center justify-center">
         <img
           src={product?.image?.url}
@@ -18,7 +23,7 @@ const ProductCard = ({ product }) => {
           className="max-h-full max-w-full object-contain"
         />
       </div>
-
+    </Link>
       <div className="p-4">
         <h3 className="font-medium line-clamp-1">
           {product?.name}
@@ -32,7 +37,9 @@ const ProductCard = ({ product }) => {
           Add to Cart
         </button>
       </div>
+    
     </div>
+
   );
 };
 

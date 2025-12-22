@@ -14,7 +14,7 @@ const Categories = () => {
           Shop by Category
         </h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1  md:grid-cols-5 gap-6">
           {categories.map((cat) => (
             <div
               key={cat}

@@ -1,7 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchAllProducts } from "./productAPI";
+import { fetchAllProducts, fetchProductById } from "./productAPI";
 
 /* ------------------ THUNK ------------------ */
+
+// fetching the product api for all products with filters 
 export const getProducts = createAsyncThunk(
   "products/getProducts",
   async (params,thunkAPI) => {
@@ -17,13 +19,35 @@ export const getProducts = createAsyncThunk(
   }
 );
 
+
+// fetching the single product api for single product
+export const getProductById = createAsyncThunk(
+  "products/getProductById",
+  async (id, thunkAPI) => {
+    try {
+      const res = await fetchProductById(id);
+      console.log("API DATA:", res.data.singleproduct);
+
+      return res.data.singleproduct;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || "Failed to fetch product"
+      );
+    }
+  }
+);
+
+
 /* ------------------ SLICE ------------------ */
 const productSlice = createSlice({
   name: "products",
   initialState: {
   products: [],
+  singleProduct : null,
   loading: false,
   error: null,
+
+
   page: 1,
   totalPages: 1,
   totalProducts: 0,
@@ -32,6 +56,8 @@ const productSlice = createSlice({
   reducers: {},
     extraReducers: (builder) => {
     builder
+
+    // this is for all products
       .addCase(getProducts.pending, (state) => {
         state.loading = true;
       })
@@ -45,7 +71,21 @@ const productSlice = createSlice({
       .addCase(getProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+
+.addCase(getProductById.pending, (state) => {
+  state.loading = true;
+})
+
+.addCase(getProductById.fulfilled, (state, action) => {
+  state.loading = false;
+  state.singleProduct = action.payload;
+})
+
+.addCase(getProductById.rejected, (state, action) => {
+  state.loading = false;
+  state.error = action.payload;
+});
   },
 });
 
