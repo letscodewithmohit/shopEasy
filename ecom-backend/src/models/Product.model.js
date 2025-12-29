@@ -39,6 +39,12 @@ const productSchema = new mongoose.Schema(
             }
 
         },
+
+    isFeatured: {
+  type: Boolean,
+  default: false,
+},
+
      createdBy : {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", // link product to admin user

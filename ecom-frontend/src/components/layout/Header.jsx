@@ -1,13 +1,58 @@
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useNavigationType } from "react-router-dom";
 import { logout } from "../../features/auth/authSlice";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+
 
 const Header = () => {
+
+const location = useLocation();
+const [searchParams] = useSearchParams();
+const searchFromUrl = searchParams.get("search") || "";
+const [search, setSearch] = useState(searchFromUrl);
+
+const [debouncedSearch, setDebouncedSearch] = useState(searchFromUrl);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { token } = useSelector((state) => state.auth);
   const { items  } = useSelector((state) => state.cart);
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setDebouncedSearch(search);
+  }, 400); // 400ms delay
+
+  return () => clearTimeout(timer);
+}, [search]);
+
+
+useEffect(() => {
+  setSearch(searchFromUrl);
+}, [searchFromUrl]);
+
+
+
+useEffect(() => {
+  // ✅ Search logic ONLY runs on /products page
+  if (location.pathname !== "/products") return;
+
+  // Clear search → show default products
+  if (!debouncedSearch.trim()) {
+    navigate("/products", { replace: true });
+    return;
+  }
+
+  // Active search
+  navigate(
+    `/products?search=${debouncedSearch.trim().toLowerCase()}`,
+    { replace: true }
+  );
+}, [debouncedSearch, location.pathname, navigate]);
+
 
   const handleLogout = () => {
     dispatch(logout());
@@ -20,15 +65,23 @@ const Header = () => {
         
         {/* Logo */}
         <Link to="/" className="text-xl font-bold text-gray-800">
-          shopEasy 🙂
+          shopEasy :)
         </Link>
 
         {/* Search */}
-       {token? ( <input
-          type="text"
-          placeholder="Search products..."
-          className="hidden md:block w-1/3 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />) : ("")}
+       {token && location.pathname === "/products" && (
+  <form className="hidden md:block w-1/3">
+
+    <input
+      type="text"
+      placeholder="Search products or category..."
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </form>
+)}
+
 
         {/* Right */}
         <div className="flex items-center gap-7">
@@ -40,6 +93,8 @@ const Header = () => {
               🛒 <span className="absolute  top-3 ">{items.length}</span>
             </Link>
           )}
+
+          <Link to='/products' className="text-gray-700 font-medium hover:text-blue-600">Products</Link>
 
           {token ? (
             <button

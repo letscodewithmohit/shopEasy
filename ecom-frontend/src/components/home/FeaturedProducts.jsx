@@ -7,11 +7,8 @@ const FeaturedProducts = () => {
   const dispatch = useDispatch();
   const { products, loading } = useSelector((state) => state.products);
 
-  
-  
-
   useEffect(() => {
-    dispatch(getProducts());
+    dispatch(getProducts({ featured: true, limit: 8 }));
   }, [dispatch]);
 
   if (loading) return <p className="text-center">Loading...</p>;
@@ -24,13 +21,14 @@ const FeaturedProducts = () => {
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {products.slice(0, 8).map((product) => (
+          {products.map((product) => (
+            
             <ProductCard key={product._id} product={product} />
           ))}
         </div>
       </div>
     </section>
-  );
+  );  
 };
 
 export default FeaturedProducts;

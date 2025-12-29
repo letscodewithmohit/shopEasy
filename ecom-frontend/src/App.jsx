@@ -8,6 +8,8 @@ import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchCart } from './features/cart/cartSlice'
+import MainLayout from './components/layout/MainLayout'
+
 
 function App() {
   const dispatch = useDispatch();
@@ -18,11 +20,18 @@ function App() {
       dispatch(fetchCart());
     }
   },[token,dispatch])
+
+
   return (
     <BrowserRouter>
-      <Header/>
-      <AppRoutes/>
-      <Footer/>
+
+    <MainLayout>
+
+        <AppRoutes/>
+    </MainLayout>
+     
+    
+
     </BrowserRouter>
   )
 }
