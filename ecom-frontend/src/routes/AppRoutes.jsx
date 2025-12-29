@@ -7,6 +7,9 @@ import ProtectedRoute from '../components/common/ProtectedRoute'
 import Cart from '../pages/Cart'
 import SingleProduct from '../pages/Products/SingleProduct'
 import ProductList from '../pages/Products/ProductList'
+import Checkout from '../pages/Checkout'
+import OrderSuccess from '../pages/OrderSuccess'
+import Profile from '../pages/Profile'
 
 
 const AppRoutes = () => {
@@ -26,6 +29,15 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+
+      <Route path="/checkout" element={ 
+      <ProtectedRoute>
+        <Checkout />
+      </ProtectedRoute>} />
+
+<Route path="/order-success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
+<Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+
 
     </Routes>
   )

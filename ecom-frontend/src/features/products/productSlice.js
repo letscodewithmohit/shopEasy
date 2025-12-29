@@ -46,8 +46,6 @@ const productSlice = createSlice({
   singleProduct : null,
   loading: false,
   error: null,
-
-
   page: 1,
   totalPages: 1,
   totalProducts: 0,

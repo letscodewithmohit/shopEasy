@@ -80,16 +80,13 @@ const cartSlice = createSlice({
       })
 
       // add to cart
-      .addCase(addToCart.fulfilled, (state, action) => {
-        state.items = action.payload.items;
-         state.totalItems = action.payload.totalItems;
-         state.totalPrice = action.payload.totalPrice;
-      })
+   .addCase(addToCart.fulfilled, (state) => {
+  state.loading = false;
+})
 
-      // update cart
-      .addCase(updateCart.fulfilled, (state, action) => {
-        state.items = action.payload.items;
-      })
+.addCase(updateCart.fulfilled, (state) => {
+  state.loading = false;
+})
 
       // clear cart
       .addCase(clearCart.fulfilled, (state) => {

@@ -1,12 +1,19 @@
+import { useNavigate } from "react-router-dom";
+
 const categories = [
   "Electronics",
   "Fashion",
-  "Home & Living",
+  "Home",
   "Books",
   "Accessories",
 ];
 
 const Categories = () => {
+    const navigate = useNavigate();
+
+    const handleCategoryClick = (category) => {
+    navigate(`/products?category=${category}`);
+  };
   return (
     <section className="bg-white py-20">
       <div className="max-w-7xl mx-auto px-6">
@@ -18,7 +25,9 @@ const Categories = () => {
           {categories.map((cat) => (
             <div
               key={cat}
-              className="border rounded-xl p-6 text-center cursor-pointer hover:border-indigo-600 transition"
+              onClick={() => handleCategoryClick(cat)}
+              className="cursor-pointer border border-blue-400 p-6 bg-white shadow rounded-lg 
+          hover:shadow-md hover:scale-105 transition text-center flex items-center justify-center"
             >
               <p className="font-medium">{cat}</p>
             </div>

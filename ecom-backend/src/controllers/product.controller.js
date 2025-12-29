@@ -3,7 +3,7 @@ import cloudinary from '../config/cloudinary.js';
 // Create new product (Admin only)
 export const createProduct = async (req, res) => {
     try{
-        const {name, description, price, category, stock} = req.body;
+        const {name, description, price, category, stock,isFeatured} = req.body;
     
         if(!req.file) {
             return res.status(400).json({
@@ -17,10 +17,12 @@ export const createProduct = async (req, res) => {
 
         const newProduct = await Product.create({
             name, description, price, category, stock, 
+             isFeatured: isFeatured || false,
             image : {
             url : imageUrl,
             public_id : req.file.filename
             },
+            
             createdBy: req.user.id
         });
 
@@ -110,7 +112,7 @@ export const deleteProduct = async (req,res) => {
 export const getAllProducts = async (req,res) =>{
     try{
 
-        const { search,category,minPrice, maxPrice,sort, page = 1, limit = 6 } = req.query; // reading ?search=xxxx from URL
+        const { search,category,minPrice, maxPrice,sort, page = 1, limit = 6, featured} = req.query; // reading ?search=xxxx from URL
 
         
         let query = {};
@@ -129,6 +131,11 @@ export const getAllProducts = async (req,res) =>{
             query.category = category;
         }
        
+if (featured === "true") {
+  query.isFeatured = true;
+}
+
+
         // price range filter can be added similarly
 
         if(minPrice || maxPrice){
