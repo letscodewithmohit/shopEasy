@@ -1,4 +1,9 @@
+import { Link } from "react-router-dom";
+import useAuthRedirect from "../../hooks/useAuthRedirect";
+
 const Footer = () => {
+
+    const { requireAuth } = useAuthRedirect();
   return (
     <footer className="bg-neutral-900 text-gray-400 py-10">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -13,9 +18,23 @@ const Footer = () => {
         <div>
           <h4 className="text-white font-medium mb-3">Quick Links</h4>
           <ul className="space-y-2 text-sm">
-            <li><a href="/products" className="hover:text-white">Products</a></li>
-            <li><a href="/cart" className="hover:text-white">Cart</a></li>
-            <li><a href="/profile" className="hover:text-white">Profile</a></li>
+           <li>
+        <button
+          onClick={() => requireAuth("/cart", "Please login to view cart")}
+          className="hover:text-white"
+        >
+          Cart
+        </button>
+      </li>
+
+      <li>
+        <button
+          onClick={() => requireAuth("/profile", "Please login to view profile")}
+          className="hover:text-white"
+        >
+          Profile
+        </button>
+      </li>
           </ul>
         </div>
 

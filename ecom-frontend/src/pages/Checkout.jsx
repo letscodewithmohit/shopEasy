@@ -14,9 +14,10 @@ import {
   FormControl,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { clearCart } from "../features/cart/cartSlice";
+import toast from "react-hot-toast";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -26,6 +27,11 @@ const Checkout = () => {
     (state) => state.cart
   );
 
+
+    // 🔴 CRITICAL GUARD: Prevent checkout with empty cart
+  if (!items || items.length === 0) {
+    return <Navigate to="/cart" replace />;
+  }
   // 🔹 Preview calculation (UI only)
 const deliveryCharge = Number(totalPrice) >= 1000 ? 0 : 40;
 const grandTotal = Number(totalPrice) + deliveryCharge;
@@ -55,7 +61,7 @@ const grandTotal = Number(totalPrice) + deliveryCharge;
       // basic validation
       for (let key in shippingAddress) {
         if (!shippingAddress[key]) {
-          return alert("Please fill all shipping details");
+          return toast.error("Please fill all shipping details");
         }
       }
 

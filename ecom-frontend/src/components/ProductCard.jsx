@@ -1,11 +1,21 @@
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, fetchCart, updateCart } from "../features/cart/cartSlice";
 import { Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
+import useAuthRedirect from "../hooks/useAuthRedirect";
+
 
 const ProductCard = ({ product }) => {
+  
+const { requireAuth } = useAuthRedirect();
   const dispatch = useDispatch();
+   const navigate = useNavigate();
+  const location = useLocation();
+  
 
   const { items } = useSelector((state) => state.cart);
+   const { token } = useSelector((state) => state.auth);
 
   // 🔍 check if product exists in cart
   const cartItem = items.find(
@@ -17,19 +27,33 @@ const ProductCard = ({ product }) => {
   const isMaxReached = quantity >= product.stock;
 
   const handleAddToCart = async () => {
+
+      // 🔐 AUTH CHECK FIRST
+  if (!token) {
+    toast.error("Please login to add items to cart");
+    navigate("/login", {
+      state: { from: location.pathname },
+    });
+    return;
+  }
+
+
     if (isOutOfStock || isMaxReached) return;
 
     if (!cartItem) {
       await dispatch(
         addToCart({ productId: product._id, quantity: 1 })
       );
+      toast.success("Added to cart");
     } else {
       await dispatch(
         updateCart({ productId: product._id, action: "increase" })
       );
+      toast.success("profuct quantity increased in cart");
     }
 
     dispatch(fetchCart());
+     
   };
 
   return (

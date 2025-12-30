@@ -2,13 +2,17 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../features/auth/authSlice";
 import { TextField, Button, Box, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { clearError } from "../features/auth/authSlice";
+import { useLocation } from "react-router-dom";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
-
+const location = useLocation();
+const from = location.state?.from || "/";
 
   const [form, setForm] = useState({
     email: "",
@@ -17,17 +21,29 @@ const Login = () => {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+     dispatch(clearError()); // 🔥 clears old errors
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(login(form)).unwrap().then((res)=>{
-        if(res?.user?.role === 'admin'){
-            navigate('/admin/dashboard');
-        }else{
-            navigate('/')
-        }
-    })
+    if (!form.email || !form.password) {
+  toast.error("Please fill all fields");
+  return;
+}
+
+    // dispatch(login(form)).unwrap().then((res)=>{
+    //     if(res?.user?.role === 'admin'){
+    //         navigate('/admin/dashboard');
+    //     }else{
+    //         navigate('/')
+    //     }
+    // })
+
+    dispatch(login(form))
+  .unwrap()
+  .then(() => {
+    navigate(from, { replace: true });
+  });
   };
 
   return (
@@ -52,9 +68,7 @@ const Login = () => {
             onChange={handleChange}
           />
 
-          {error && (
-            <Typography color="error">{error}</Typography>
-          )}
+        
 
           <Button
             type="submit"
@@ -64,6 +78,8 @@ const Login = () => {
           >
             {loading ? "Logging in..." : "Login"}
           </Button>
+
+          <p className="text-gray-700">Don't have an Account? <Link to="/register" className="text-blue-600 hover:text-blue-800">Register Now</Link></p>
         </form>
       </Box>
     </Box>

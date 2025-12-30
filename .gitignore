@@ -1,4 +1,13 @@
 # Environment variables
+# Ignore env files everywhere
+.env
+.env.*
+frontend/.env
+backend/.env
+
+# node
+node_modules
+
 .env
 .env.local
 .env.production
