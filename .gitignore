@@ -2,8 +2,8 @@
 # Ignore env files everywhere
 .env
 .env.*
-frontend/.env
-backend/.env
+ecom-frontend/.env
+ecom-backend/.env
 
 # node
 node_modules
