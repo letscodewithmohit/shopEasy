@@ -1,15 +1,20 @@
 import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductById } from "../../features/products/productSlice";
 import { addToCart, fetchCart, updateCart } from "../../features/cart/cartSlice";
-
+import toast from "react-hot-toast";
+import { ArrowBack } from "@mui/icons-material";
+import { Button } from "@mui/material";
 const SingleProduct = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { items } = useSelector((state) => state.cart);
+   const { token } = useSelector((state) => state.auth);
+
   const { singleProduct, loading } = useSelector(
     (state) => state.products
   );
@@ -29,12 +34,22 @@ const SingleProduct = () => {
 
   // 🔹 HANDLERS
   const handleAddToCart = async () => {
+
+     if (!token) {
+    toast.error("Please login to add items to cart");
+    navigate("/login", {
+      state: { from: location.pathname },
+    });
+    return;
+  }
     if (isOutOfStock || isMaxQuantityReached) return;
 
     if (!cartItem) {
       await dispatch(
         addToCart({ productId: singleProduct._id, quantity: 1 })
+        
       );
+      toast.success("Added to cart!");
     } else {
       await dispatch(
         updateCart({ productId: singleProduct._id, action: "increase" })
@@ -93,6 +108,15 @@ const SingleProduct = () => {
     <section className="min-h-screen bg-gray-50 py-10">
      
       <div className="max-w-7xl mx-auto px-6">
+      
+
+          <Button
+        startIcon={<ArrowBack />}
+        onClick={() => navigate("/products")}
+        sx={{ mb: 3 }}
+      >
+        Back to Products
+      </Button>
       
         <div className="bg-white rounded-lg shadow-sm grid grid-cols-1 md:grid-cols-2 gap-10 p-8">
        

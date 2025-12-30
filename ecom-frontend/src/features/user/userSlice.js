@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { fetchUserProfile, updateUserProfileApi } from "./userApi";
 import api from "../../api/axios";
+import toast from "react-hot-toast";
 
 export const getUserProfile = createAsyncThunk(
   "user/getProfile",
@@ -16,16 +17,19 @@ export const getUserProfile = createAsyncThunk(
   }
 );
 
+
 export const updateUserProfile = createAsyncThunk(
   "user/updateProfile",
   async (data, thunkAPI) => {
     try {
       const res = await updateUserProfileApi(data);
+       toast.success("Profile updated successfully");
       return res.data.user;
     } catch (err) {
-      return thunkAPI.rejectWithValue(
-        err.response?.data?.message || "Update failed"
+      toast.error(
+        err.response?.data?.message || "Profile update failed"
       );
+      return thunkAPI.rejectWithValue("Update failed");
     }
   }
 );

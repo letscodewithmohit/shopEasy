@@ -10,56 +10,79 @@ import {
   Grid,
   Divider,
 } from "@mui/material";
-import { Add, Remove, Delete } from "@mui/icons-material";
+import { Add, Remove, Delete, ArrowBack } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCart, updateCart } from "../features/cart/cartSlice";
+import { fetchCart, updateCart, clearCart } from "../features/cart/cartSlice";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // 🔹 Cart state from Redux
   const { items, totalItems, totalPrice } = useSelector(
     (state) => state.cart
   );
 
+  // 🔹 Fetch cart when page loads
   useEffect(() => {
     dispatch(fetchCart());
   }, [dispatch]);
 
+  // 🔹 Increase product quantity
   const handleIncrease = async (productId) => {
     await dispatch(updateCart({ productId, action: "increase" }));
-    dispatch(fetchCart());
+    dispatch(fetchCart()); // refresh cart
   };
 
+  // 🔹 Decrease product quantity
   const handleDecrease = async (productId) => {
     await dispatch(updateCart({ productId, action: "decrease" }));
     dispatch(fetchCart());
   };
 
+  // 🔹 Remove single product
   const handleRemove = async (productId) => {
     await dispatch(updateCart({ productId, action: "remove" }));
     dispatch(fetchCart());
+    toast.success("Item removed from cart");
   };
 
+  // 🔹 Clear entire cart
+  const handleClearCart = async () => {
+    const confirmClear = window.confirm(
+      "Are you sure you want to remove all items from cart?"
+    );
+    if (!confirmClear) return;
+
+    await dispatch(clearCart());
+    dispatch(fetchCart());
+  };
+
+  // 🔴 UX GUARD: Empty cart UI
   if (!items || items.length === 0) {
     return (
-      <Typography variant="h5" align="center" mt={5}>
-        Your cart is empty 🛒
-      </Typography>
+      <Box textAlign="center" mt={6}>
+        <Typography variant="h5" mb={2}>
+          Your cart is empty 🛒
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => navigate("/products")}
+        >
+          Start Shopping
+        </Button>
+      </Box>
     );
   }
 
-// 1️⃣ Delivery display text
-const estimatedDelivery =
-  Number(totalPrice) >= 1000 ? "FREE" : "₹40";
+  // 🔹 Delivery logic
+  const deliveryCharge = Number(totalPrice) >= 1000 ? 0 : 40;
+  const estimatedDelivery = deliveryCharge === 0 ? "FREE" : "₹40";
 
-// 2️⃣ Delivery numeric value
-const deliveryCharge = Number(totalPrice) >= 1000 ? 0 : 40;
-
-// 3️⃣ Final amount user pays
-const grandTotal = Number(totalPrice) + deliveryCharge;
-
+  // 🔹 Final payable amount
+  const grandTotal = Number(totalPrice) + deliveryCharge;
 
   return (
     <Box className="max-w-7xl mx-auto px-6 py-10">
@@ -67,20 +90,23 @@ const grandTotal = Number(totalPrice) + deliveryCharge;
         Shopping Cart
       </Typography>
 
+      {/* Continue shopping */}
+      <Button
+        startIcon={<ArrowBack />}
+        onClick={() => navigate("/products")}
+        sx={{ mb: 3 }}
+      >
+        Continue Shopping
+      </Button>
+
       <Grid container spacing={4} alignItems="flex-start">
         {/* LEFT — CART ITEMS */}
         <Grid item xs={12} md={8}>
-          <Box
-            sx={{
-              maxHeight: "70vh",
-              overflowY: "auto",
-              pr: 1,
-            }}
-          >
+          <Box sx={{ maxHeight: "70vh", overflowY: "auto", pr: 1 }}>
             {items.map((item) => (
               <Card key={item.product._id} sx={{ mb: 2 }}>
                 <Grid container alignItems="center">
-                  {/* IMAGE */}
+                  {/* Product Image */}
                   <Grid item xs={4}>
                     <Box
                       component={RouterLink}
@@ -99,16 +125,12 @@ const grandTotal = Number(totalPrice) + deliveryCharge;
                         component="img"
                         image={item.product?.image?.url}
                         alt={item.product.name}
-                        sx={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "contain",
-                        }}
+                        sx={{ width: "100%", height: "100%", objectFit: "contain" }}
                       />
                     </Box>
                   </Grid>
 
-                  {/* DETAILS */}
+                  {/* Product Details */}
                   <Grid item xs={8}>
                     <CardContent>
                       <Typography variant="h6">
@@ -119,6 +141,7 @@ const grandTotal = Number(totalPrice) + deliveryCharge;
                         ₹{item.price}
                       </Typography>
 
+                      {/* Quantity Controls */}
                       <Box display="flex" alignItems="center">
                         <IconButton
                           onClick={() => handleDecrease(item.product._id)}
@@ -152,8 +175,8 @@ const grandTotal = Number(totalPrice) + deliveryCharge;
           </Box>
         </Grid>
 
-        {/* RIGHT — ORDER SUMMARY (REMAINS WIDTH) */}
-        <Grid item xs={12} md={4} >
+        {/* RIGHT — ORDER SUMMARY */}
+        <Grid item xs={12} md={4}>
           <Card sx={{ position: "sticky", top: 100 }}>
             <CardContent>
               <Typography variant="h6" fontWeight="bold">
@@ -162,23 +185,20 @@ const grandTotal = Number(totalPrice) + deliveryCharge;
 
               <Divider sx={{ my: 2 }} />
 
-    <Box display="flex" justifyContent="space-between" mb={1}>
-  <Typography color="text.secondary">Items</Typography>
-  <Typography>{totalItems}</Typography>
-</Box>
+              <Box display="flex" justifyContent="space-between">
+                <Typography color="text.secondary">Items</Typography>
+                <Typography>{totalItems}</Typography>
+              </Box>
 
-<Box display="flex" justifyContent="space-between" mb={1}>
-  <Typography color="text.secondary">Subtotal</Typography>
-  <Typography>₹{totalPrice}</Typography>
-</Box>
+              <Box display="flex" justifyContent="space-between">
+                <Typography color="text.secondary">Subtotal</Typography>
+                <Typography>₹{totalPrice}</Typography>
+              </Box>
 
-<Box display="flex" justifyContent="space-between" mb={1}>
-  <Typography color="text.secondary">Delivery</Typography>
-  <Typography color="text.primary">
-    {estimatedDelivery}
-  </Typography>
-</Box>
-
+              <Box display="flex" justifyContent="space-between">
+                <Typography color="text.secondary">Delivery</Typography>
+                <Typography>{estimatedDelivery}</Typography>
+              </Box>
 
               <Divider sx={{ my: 2 }} />
 
@@ -192,9 +212,7 @@ const grandTotal = Number(totalPrice) + deliveryCharge;
                 }}
               >
                 <Typography fontWeight="bold">Total</Typography>
-                <Typography fontWeight="bold">
-                  ₹{grandTotal}
-                </Typography>
+                <Typography fontWeight="bold">₹{grandTotal}</Typography>
               </Box>
 
               <Button
@@ -205,6 +223,16 @@ const grandTotal = Number(totalPrice) + deliveryCharge;
                 onClick={() => navigate("/checkout")}
               >
                 Proceed to Checkout
+              </Button>
+
+              <Button
+                variant="outlined"
+                color="error"
+                fullWidth
+                sx={{ mt: 2 }}
+                onClick={handleClearCart}
+              >
+                Clear Cart
               </Button>
 
               <Typography

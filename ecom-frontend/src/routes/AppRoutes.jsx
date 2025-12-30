@@ -10,6 +10,9 @@ import ProductList from '../pages/Products/ProductList'
 import Checkout from '../pages/Checkout'
 import OrderSuccess from '../pages/OrderSuccess'
 import Profile from '../pages/Profile'
+import MyOrders from '../pages/order/MyOrders'
+import OrderDetails from '../pages/order/OrderDetails'
+import NotFound from "../pages/NotFound";
 
 
 const AppRoutes = () => {
@@ -30,14 +33,17 @@ const AppRoutes = () => {
         }
       />
 
-      <Route path="/checkout" element={ 
-      <ProtectedRoute>
-        <Checkout />
-      </ProtectedRoute>} />
+      <Route path="/checkout" element={
+        <ProtectedRoute>
+          <Checkout />
+        </ProtectedRoute>} />
 
-<Route path="/order-success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
-<Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      <Route path="/order-success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      <Route path="/orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
+      <Route path="/orders/:id" element={<ProtectedRoute><OrderDetails /> </ProtectedRoute>} />
 
+      <Route path="*" element={<NotFound />} />
 
     </Routes>
   )

@@ -5,6 +5,35 @@ import jwt from "jsonwebtoken";
 export const registerUser = async (req, res) => {
 try{
     const { name, email, password } = req.body;
+   
+       // 1️⃣ Required fields
+  if (!name || !email || !password) {
+    return res.status(400).json({
+      message: "All fields are required",
+    });
+  }
+
+  // 2️⃣ Email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({
+      message: "Invalid email format",
+    });
+  }
+
+  // 3️⃣ Optional: gmail only
+  if (!email.endsWith("@gmail.com")) {
+    return res.status(400).json({
+      message: "Only @gmail.com emails are allowed",
+    });
+  }
+
+  // 4️⃣ Password length
+  if (password.length < 6) {
+    return res.status(400).json({
+      message: "Password must be at least 6 characters",
+    });
+  }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
