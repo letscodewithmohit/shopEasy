@@ -23,11 +23,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/cart",cartRoutes );
 app.use("/api/orders", orderRoutes);
 
-console.log("Cloudinary ENV:", {
-  name: process.env.CLOUDINARY_NAME,
-  key: process.env.CLOUDINARY_API_KEY,
-  secret: process.env.CLOUDINARY_API_SECRET
-});
+
 
 
 

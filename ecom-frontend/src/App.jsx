@@ -1,15 +1,11 @@
 import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import { BrowserRouter } from 'react-router-dom'
 import AppRoutes from './routes/AppRoutes'
-import Header from './components/layout/Header'
-import Footer from './components/layout/Footer'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchCart } from './features/cart/cartSlice'
 import MainLayout from './components/layout/MainLayout'
-
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const dispatch = useDispatch();
@@ -26,7 +22,12 @@ function App() {
     <BrowserRouter>
 
     <MainLayout>
-
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+        }}
+      />
         <AppRoutes/>
     </MainLayout>
      

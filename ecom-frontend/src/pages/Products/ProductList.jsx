@@ -37,6 +37,22 @@ const [filters, setFilters] = useState({
 };
 
 
+// useEffect(() => {
+//  if (categoryFromUrl && search) {
+//     setFilters((prev) => ({
+//       ...prev,
+//       category: categoryFromUrl,
+//       page: 1,
+//     }));
+//   }
+// }, [categoryFromUrl, search]);
+
+
+
+useEffect(() => {
+  dispatch(getProducts(filters));
+}, [dispatch, filters]);
+
 useEffect(() => {
   setFilters((prev) => ({
     ...prev,
@@ -44,11 +60,8 @@ useEffect(() => {
     search: search || "",
     page: 1,
   }));
-}, [categoryFromUrl, search]);
+}, [search]);
 
-useEffect(() => {
-  dispatch(getProducts(filters));
-}, [dispatch, filters]);
 
   return (
    <section className="bg-neutral-50 min-h-screen py-10">
@@ -63,7 +76,7 @@ useEffect(() => {
         <div className="md:col-span-3">
           {!loading && products.length === 0 && (
   <p className="text-center text-gray-500 mt-10">
-    No products found for "<b>{search}</b>"
+    No products found 
   </p>
 )}
 

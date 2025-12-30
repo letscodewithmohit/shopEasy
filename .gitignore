@@ -1,0 +1,14 @@
+# Environment variables
+# Ignore env files everywhere
+.env
+.env.*
+ecom-frontend/.env
+ecom-backend/.env
+
+# node
+node_modules
+
+.env
+.env.local
+.env.production
+.env.development

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { loginUser, registerUser } from "./authAPI";
+import toast from "react-hot-toast";
 
 // Load token if exists
  const token = localStorage.getItem("token");
@@ -8,10 +9,17 @@ export const login = createAsyncThunk('auth/login',
     async (data,thunkAPI)  => {
        try{
         const res = await loginUser(data);
+        toast.success("Welcome back!");
         return res.data;
        }
        catch(err){
-        return thunkAPI.rejectWithValue(err.response.data.message);
+        const message =
+        err.response?.data?.message ||
+        err.message ||
+        "Login failed. Please try again.";
+
+      toast.error(message);
+      return thunkAPI.rejectWithValue(message);
        }
     }
 );
@@ -19,9 +27,16 @@ export const login = createAsyncThunk('auth/login',
 export const register = createAsyncThunk("auth/register", async (data,thunkAPI) => {
     try{
      const res = await registerUser(data);
+     toast.success("Registration successful! Please login.");
      return res.data;
     }catch(err){
-     return thunkAPI.rejectWithValue(err.response.data.message)
+    const message =
+        err.response?.data?.message ||
+        err.message ||
+        "Registration failed. Please try again.";
+
+      toast.error(message);
+      return thunkAPI.rejectWithValue(message);
     }
 });
 
@@ -38,8 +53,12 @@ const authSlice = createSlice({
         logout : (state) => {
             state.user = null,
             state.token = null;
+            state.error = null;
             localStorage.removeItem("token");
         },
+        clearError: (state) => {
+    state.error = null;
+  },
     },
 
     extraReducers : (builder) => {
@@ -73,7 +92,7 @@ const authSlice = createSlice({
     },
 });
 
-export const {logout} = authSlice.actions;
+export const {logout,clearError} = authSlice.actions;
 export default authSlice.reducer;
 
 

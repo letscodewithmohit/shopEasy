@@ -42,7 +42,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-3 py-10">
       <div className="bg-white shadow-xl rounded-xl w-full max-w-xl p-6 sm:p-8">
 
         {/* Avatar */}
