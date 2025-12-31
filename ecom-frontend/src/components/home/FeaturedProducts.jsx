@@ -19,13 +19,19 @@ const FeaturedProducts = () => {
         <h2 className="text-2xl font-semibold mb-8">
           Featured Products
         </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+       
+       { products.length === 0 ? (
+        <p className="text-center">No featured products available.</p>
+       ) : (
+           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {products.map((product) => (
             
             <ProductCard key={product._id} product={product} />
           ))}
         </div>
+        )}
+        
+     
       </div>
     </section>
   );  
