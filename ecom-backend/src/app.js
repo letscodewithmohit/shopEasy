@@ -24,6 +24,14 @@ const app = express();
 //   credentials: true
 // }));
 
+// app.use(cors({
+//   origin: [
+//     "http://localhost:5173", // local dev
+//     "https://shop-easy-ochre.vercel.app" // production
+//   ],
+//   credentials: true
+// }));
+
 app.use(cors({
   origin: true, // allow all origins
   credentials: true
