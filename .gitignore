@@ -27,6 +27,8 @@ ecom-backend/.env
 dump/
 *.bson
 *.json
+!vercel.json
+
 
 # --------------------------
 # Logs
