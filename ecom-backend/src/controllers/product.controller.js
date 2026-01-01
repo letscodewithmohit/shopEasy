@@ -2,13 +2,13 @@ import Product from '../models/Product.model.js';
 import cloudinary from '../config/cloudinary.js';
 // Create new product (Admin only)
 export const createProduct = async (req, res) => {
-    try{
-        const {name, description, price, category, stock,isFeatured} = req.body;
-    
-        if(!req.file) {
+    try {
+        const { name, description, price, category, stock, isFeatured } = req.body;
+
+        if (!req.file) {
             return res.status(400).json({
-                success : false,
-                message : "Product image is required",
+                success: false,
+                message: "Product image is required",
             });
         }
 
@@ -16,27 +16,27 @@ export const createProduct = async (req, res) => {
         const imageUrl = req.file?.path;
 
         const newProduct = await Product.create({
-            name, description, price, category, stock, 
-             isFeatured: isFeatured || false,
-            image : {
-            url : imageUrl,
-            public_id : req.file.filename
+            name, description, price, category, stock,
+            isFeatured: isFeatured || false,
+            image: {
+                url: imageUrl,
+                public_id: req.file.filename
             },
-            
+
             createdBy: req.user.id
         });
 
         res.status(201).json({
-            success : true,
-            message : "Product created successfully",
-            product : newProduct,
+            success: true,
+            message: "Product created successfully",
+            product: newProduct,
         });
 
 
-    }catch(error){
+    } catch (error) {
         res.status(500).json({
-            success : false,
-            message : "Server Error",
+            success: false,
+            message: "Server Error",
             error,
         });
     }
@@ -44,27 +44,27 @@ export const createProduct = async (req, res) => {
 
 // UPDATE PRODUCT (ADMIN ONLY)
 
-export const updateProduct = async (req,res) => {
-    try{
+export const updateProduct = async (req, res) => {
+    try {
         const productId = req.params.id;
 
         const updatedProduct = await Product.findByIdAndUpdate(
-            productId, req.body, {new:true, runValidators:true}
+            productId, req.body, { new: true, runValidators: true }
         );
 
-        if(!updatedProduct){
+        if (!updatedProduct) {
             return res.status(404).json({
-                message : "Product not found"
+                message: "Product not found"
             })
         }
 
         res.status(200).json({
-            message : "Product updated sucessfully",
+            message: "Product updated sucessfully",
             updatedProduct
         })
-    }catch(error){
+    } catch (error) {
         res.status(500).json({
-            message : "Server Error",
+            message: "Server Error",
             error,
         })
     }
@@ -72,79 +72,81 @@ export const updateProduct = async (req,res) => {
 
 // delete product (admin only) 
 
-export const deleteProduct = async (req,res) => {
+export const deleteProduct = async (req, res) => {
 
-    try{
+    try {
         const product = await Product.findById(req.params.id);
-        
-        if(!product){
+
+        if (!product) {
             return res.status(404).json({
-                success : false,
-                message : "Product not found"
+                success: false,
+                message: "Product not found"
             })
         }
-      
+
         // delete image from cloudinary
-        if(product.image?.public_id) {
+        if (product.image?.public_id) {
             await cloudinary.uploader.destroy(product.image.public_id);
         }
-        
+
         // delete product from database
         await product.deleteOne();
-        
-    
+
+
         res.status(200).json({
-            success : true, 
-            message : "Product deleted successfully",
-            
+            success: true,
+            message: "Product deleted successfully",
+
         })
 
 
-    }catch(error){
+    } catch (error) {
         res.status(500).json({
-            message : "Server Error", error
+            message: "Server Error", error
         });
     }
 }
 
 // Get all products
 
-export const getAllProducts = async (req,res) =>{
-    try{
+export const getAllProducts = async (req, res) => {
+    try {
 
-        const { search,category,minPrice, maxPrice,sort, page = 1, limit = 6, featured} = req.query; // reading ?search=xxxx from URL
+        const { search, category, minPrice, maxPrice, sort, page = 1, limit = 6, featured } = req.query; // reading ?search=xxxx from URL
 
+
+        console.log(featured);
         
         let query = {};
 
         // for search functionality
         if (search) {
-            query.name = { 
+            query.name = {
                 $regex: search,  // to perform partial match
                 $options: 'i' // case-insensitive search
-            }; 
+            };
         }
 
         // for category filter functionality
 
-        if(category){
+        if (category) {
             query.category = category;
         }
-       
-if (featured === "true") {
-  query.isFeatured = true;
-}
+
+        if (featured === "true") {
+            query.isFeatured = true;
+        }
 
 
         // price range filter can be added similarly
 
-        if(minPrice || maxPrice){
+        if (minPrice || maxPrice) {
             query.price = {};
 
-            if(minPrice){
+            if (minPrice) {
                 query.price.$gte = Number(minPrice);
             }
-            if(maxPrice){
+            if (maxPrice) {
                 query.price.$lte = Number(maxPrice);
             }
         }
@@ -153,39 +155,36 @@ if (featured === "true") {
 
         let sorted = {};
 
-        if(sort === 'priceAsc'){
+        if (sort === 'priceAsc') {
             sorted.price = 1;  //ascending order
         }
-        else if(sort === 'priceDesc'){
+        else if (sort === 'priceDesc') {
             sorted.price = -1; //descending order
         }
-        
 
         // pageination can be added similarly
-
-        const pageNumber =  Number(page);
+        const pageNumber = Number(page);
         const limitNumber = Number(limit);
         const skip = (pageNumber - 1) * limitNumber;
-        
+
         // total count for pagination
         const paginatedProducts = await Product.countDocuments(query);// this is a This is the TOTAL COUNT of products after applying all filters.
 
-         // main query to database
+        // main query to database
         const allProducts = await Product.find(query).sort(sorted).skip(skip).limit(limitNumber);
 
         res.status(200).json({
-            message : "Products fetched successfully",
+            message: "Products fetched successfully",
             paginatedProducts,// total products
-            CursorPage : pageNumber, // current page
-            totalPages : Math.ceil(paginatedProducts / limitNumber), 
-            limit : limitNumber,// per page limit
-            results : allProducts.length,// count of current page
-            products : allProducts// actual data
-
+            CursorPage: pageNumber, // current page
+            totalPages: Math.ceil(paginatedProducts / limitNumber),
+            limit: limitNumber,// per page limit
+            results: allProducts.length,// count of current page
+            products: allProducts// actual data
         });
-    }catch(error){
+    } catch (error) {
         res.status(500).json({
-            message : "Server Error",
+            message: "Server Error",
             error,
         });
     }
@@ -193,22 +192,22 @@ if (featured === "true") {
 
 // Get single product by ID 
 
-export const getProductById = async (req,res)=>{
-    try{
+export const getProductById = async (req, res) => {
+    try {
         const singleproduct = await Product.findById(req.params.id);
-        if(!singleproduct){
+        if (!singleproduct) {
             return res.status(404).json({
-                message : "Product not found"
+                message: "Product not found"
             });
         }
 
         res.status(200).json({
-            message : "Single Product fetched successfully",
-            singleproduct       
+            message: "Single Product fetched successfully",
+            singleproduct
         });
-    }catch (error){
+    } catch (error) {
         res.status(500).json({
-            message : "Server Error",
+            message: "Server Error",
             error,
         });
     }
