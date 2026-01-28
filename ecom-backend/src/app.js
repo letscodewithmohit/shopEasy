@@ -15,15 +15,43 @@ const app = express();
 //   origin: "http://localhost:5173",
 //   credentials: true
 // }));
+<<<<<<< HEAD
 
 app.use(cors({
   origin: [
     "http://localhost:5173", // local dev
     "https://shop-easy-ochre.vercel.app" // production
   ],
+=======
+ 
+// app.use(cors({
+//   origin: [
+//     "http://localhost:5173", // local dev
+//     "https://shop-easy-ochre.vercel.app" // production
+//   ],
+//   credentials: true
+// }));
+
+// app.use(cors({
+//   origin: [
+//     "http://localhost:5173", // local dev
+//     "https://shop-easy-ochre.vercel.app" // production
+//   ],
+//   credentials: true
+// }));
+
+app.use(cors({
+  origin: true, // allow all origins
+>>>>>>> 7677d01a099ad11611f9552200348924042f467b
   credentials: true
 }));
+
+
 app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("ShopEasy Backend is running 🚀");
+});
 
 app.use("/api/user", userRoutes); 
 app.use("/api/auth", authRoutes);
@@ -33,6 +61,7 @@ app.use("/api/orders", orderRoutes);
 
 
 
+app.set("trust proxy", 1);
 
 
 export default app;

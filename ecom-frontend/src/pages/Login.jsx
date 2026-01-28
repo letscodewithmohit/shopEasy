@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { clearError } from "../features/auth/authSlice";
 import { useLocation } from "react-router-dom";
+import GoogleLoginButton from "../components/common/GoogleLoginButton";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -80,6 +81,9 @@ const from = location.state?.from || "/";
           </Button>
 
           <p className="text-gray-700">Don't have an Account? <Link to="/register" className="text-blue-600 hover:text-blue-800">Register Now</Link></p>
+
+          <GoogleLoginButton />
+
         </form>
       </Box>
     </Box>
