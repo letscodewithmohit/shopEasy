@@ -15,14 +15,6 @@ const app = express();
 //   origin: "http://localhost:5173",
 //   credentials: true
 // }));
-<<<<<<< HEAD
-
-app.use(cors({
-  origin: [
-    "http://localhost:5173", // local dev
-    "https://shop-easy-ochre.vercel.app" // production
-  ],
-=======
  
 // app.use(cors({
 //   origin: [
@@ -42,7 +34,6 @@ app.use(cors({
 
 app.use(cors({
   origin: true, // allow all origins
->>>>>>> 7677d01a099ad11611f9552200348924042f467b
   credentials: true
 }));
 
